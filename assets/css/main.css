@@ -1,4 +1,4 @@
-  <style>
+
     /* Preloader Styles */
     .preloader {
       position: fixed;
@@ -126,9 +126,13 @@
 
     .hero-image {
       position: relative;
+      display: flex;
+     justify-content: center;
+  
     }
 
     .hero-main-image {
+
       border-radius: 20px;
       box-shadow: 0 20px 40px rgba(0, 123, 255, 0.3);
       transition: transform 0.3s ease;
@@ -151,7 +155,7 @@
 
     .floating-card.card-1 {
       top: 10%;
-      right: 10%;
+      right: -20%;
       animation-delay: 0s;
     }
 

@@ -3,7 +3,7 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-require '../../vendor/autoload.php'; // Adjust path as needed for PHPMailer
+require '../../vendor/autoload.php'; 
 
 header('Content-Type: application/json');
 
