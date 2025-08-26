@@ -66,36 +66,6 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   });
 });
 
-// Download CV function
-function downloadCV() {
-  const cvContent = `
-PELUMI OTEGBOLA
-Full Stack Developer
-
-EXPERIENCE:
-• Web Developer at TechElevate (Jun 2025 — Present)
-• Frontend Developer - Freelance (Dec 2023 — Apr 2025)
-• IT Technician at Alpha Cyber Cafe (May 2021 — Jun 2023)
-
-EDUCATION:
-• IT Career Switch – Full Stack Developer Training (Aug 2024 — Aug 2025)
-• B.Sc Computer Science - Second Class Honours (Mar 2017 — Jun 2021)
-
-SKILLS:
-JavaScript, TypeScript, React, Node.js, Express, PHP, Python, PostgreSQL, MongoDB, AWS, Docker
-
-CONTACT:
-LinkedIn: linkedin.com/in/pellypepper/
-GitHub: github.com/pellypepper/
-  `;
-  const element = document.createElement('a');
-  const file = new Blob([cvContent], {type: 'text/plain'});
-  element.href = URL.createObjectURL(file);
-  element.download = 'Pelumi_Otegbola_CV.txt';
-  document.body.appendChild(element);
-  element.click();
-  document.body.removeChild(element);
-}
 
 // Header scroll effect
 window.addEventListener('scroll', function() {
@@ -109,8 +79,14 @@ window.addEventListener('scroll', function() {
   }
 });
 
+
+
 // Portfolio modal population and tech stack badges
 document.addEventListener("DOMContentLoaded", function () {
+  // Fix: Create modal instance ONCE
+  const portfolioModalEl = document.getElementById('portfolioModal');
+  const portfolioModal = new bootstrap.Modal(portfolioModalEl);
+
   function slugify(tech) {
     return tech.toLowerCase()
       .replace(/\.js$/, 'js')
@@ -157,62 +133,56 @@ document.addEventListener("DOMContentLoaded", function () {
     "googlesheets": "bi-file-earmark-spreadsheet",
     "other": "bi-gear"
   };
+  function populatePortfolioModal(entry) {
+    document.getElementById('portfolioModalLabel').textContent = entry.getAttribute('data-title');
+    document.getElementById('portfolioModalImg').src = entry.getAttribute('data-img');
+    document.getElementById('portfolioModalMeta').textContent = entry.getAttribute('data-meta');
+    document.getElementById('portfolioModalDesc').textContent = entry.getAttribute('data-description');
+    const demoLink = document.getElementById('portfolioModalDemo');
+    const githubLink = document.getElementById('portfolioModalGithub');
+    demoLink.href = entry.getAttribute('data-demo');
+    githubLink.href = entry.getAttribute('data-github');
+    demoLink.setAttribute('target', '_blank');
+    githubLink.setAttribute('target', '_blank');
+    const techStack = entry.getAttribute('data-tech');
+    const techContainer = document.getElementById('portfolioModalTech');
+    techContainer.innerHTML = '';
+    if (techStack) {
+      techStack.split(',').map(t => t.trim()).forEach(tech => {
+        const slug = slugify(tech);
+        const icon = techStackIcons[slug] || techStackIcons["other"];
+        const badge = document.createElement('span');
+        badge.className = `badge badge-${slug} d-flex align-items-center mb-1`;
+        badge.innerHTML = `<i class="bi ${icon} me-1"></i>${tech}`;
+        techContainer.appendChild(badge);
+      });
+    }
+  }
 
   document.querySelectorAll('.portfolio-entry').forEach(function(entry) {
-    // Modal population logic
-    function populatePortfolioModal() {
-      document.getElementById('portfolioModalLabel').textContent = entry.getAttribute('data-title');
-      document.getElementById('portfolioModalImg').src = entry.getAttribute('data-img');
-      document.getElementById('portfolioModalMeta').textContent = entry.getAttribute('data-meta');
-      document.getElementById('portfolioModalDesc').textContent = entry.getAttribute('data-description');
-      // External links
-      const demoLink = document.getElementById('portfolioModalDemo');
-      const githubLink = document.getElementById('portfolioModalGithub');
-      demoLink.href = entry.getAttribute('data-demo');
-      githubLink.href = entry.getAttribute('data-github');
-      demoLink.setAttribute('target', '_blank');
-      githubLink.setAttribute('target', '_blank');
-      // Tech stack
-      const techStack = entry.getAttribute('data-tech');
-      const techContainer = document.getElementById('portfolioModalTech');
-      techContainer.innerHTML = '';
-      if (techStack) {
-        techStack.split(',').map(t => t.trim()).forEach(tech => {
-          const slug = slugify(tech);
-          const icon = techStackIcons[slug] || techStackIcons["other"];
-          const badge = document.createElement('span');
-          badge.className = `badge badge-${slug} d-flex align-items-center mb-1`;
-          badge.innerHTML = `<i class="bi ${icon} me-1"></i>${tech}`;
-          techContainer.appendChild(badge);
-        });
-      }
-    }
-
-    // Entry click
-    entry.addEventListener('click', populatePortfolioModal);
-
-    // Overlay click triggers modal
     const overlay = entry.querySelector('.entry-overlay');
     if (overlay) {
       overlay.addEventListener('click', function(e) {
         e.stopPropagation();
-        populatePortfolioModal();
-        const modal = new bootstrap.Modal(document.getElementById('portfolioModal'));
-        modal.show();
+        populatePortfolioModal(entry);
+        portfolioModal.show();
       });
     }
-
-    // "View More" button triggers modal
     const viewMoreBtn = entry.querySelector('.view-more-btn');
     if (viewMoreBtn) {
       viewMoreBtn.classList.remove("d-none");
       viewMoreBtn.addEventListener('click', function(e) {
         e.stopPropagation();
-        populatePortfolioModal();
-        const modal = new bootstrap.Modal(document.getElementById('portfolioModal'));
-        modal.show();
+        populatePortfolioModal(entry);
+        portfolioModal.show();
       });
     }
+  });
+
+  // Cleanup lingering backdrop and modal-open class
+  portfolioModalEl.addEventListener('hidden.bs.modal', function () {
+    document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+    document.body.classList.remove('modal-open');
   });
 });
 
