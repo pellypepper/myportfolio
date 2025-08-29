@@ -544,3 +544,16 @@
 #portfolioModalTech .badge-twilio     { background: #f22f46; color: #fff; }
 #portfolioModalTech .badge-googlesheets { background: #0f9d58; color: #fff; }
 #portfolioModalTech .badge-other      { background: #64748b; color: #fff; }
+
+
+.modal-body{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.modal-body img{
+margin: 0 auto;
+}
+
+ 
